@@ -1,0 +1,30 @@
+# Maven / Java
+target/
+*.class
+*.jar
+!.mvn/wrapper/*.jar
+dependency-reduced-pom.xml
+
+# Flink runtime artifacts
+flink-checkpoints/
+flink-savepoints/
+log/
+*.log
+
+# Docker / local data
+.env
+*-data/
+pgdata/
+chdata/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDEs / OS
+.idea/
+*.iml
+.vscode/
+.DS_Store
