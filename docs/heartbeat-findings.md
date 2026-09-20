@@ -29,3 +29,9 @@ source. Unresolved; needs investigating before relying on it (Flink CDC also exp
 - The incremental snapshot only hands off to the stream reader after a checkpoint completes. A very
   long checkpoint interval leaves the job in the snapshot phase with the slot `active=false`.
 - The checkpoint volume must be writable by the `flink` user (`checkpoint-perms` service in Compose).
+
+## Update after upgrading to Flink 2.2.1 / Flink CDC 3.6.0-2.2 / Java 21
+
+On the upgraded stack the heartbeat **does fire**: `cdc_heartbeat.ts` advanced every ~5 s
+with the same job code and the same `heartbeat.action.query`. The experiments above ran on
+Flink 1.20 and have not been repeated; re-running them on 2.2 is still open.

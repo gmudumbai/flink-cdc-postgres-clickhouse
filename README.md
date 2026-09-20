@@ -14,8 +14,8 @@ In progress: Phases 0 (infrastructure), 1 (CDC source) and 2 (typed change event
 ## Stack
 
 - PostgreSQL 16 (`wal_level=logical`, `REPLICA IDENTITY FULL`)
-- Apache Flink 1.20.x and Flink CDC 3.x (Java 17, Maven, DataStream API)
-- ClickHouse (JDBC sink)
+- Apache Flink 2.2.1 and Flink CDC 3.6.0 (Java 21, Maven, DataStream API)
+- ClickHouse 26.8 (LTS)
 - Docker Compose, everything runs locally
 
 ## Planned layout
@@ -35,10 +35,19 @@ Flink, Flink CDC, `flink-connector-jdbc` and the ClickHouse JDBC driver versions
 
 | Component | Version | Status |
 |---|---|---|
-| Flink | 1.20.5 | verified |
-| Flink CDC (`flink-connector-postgres-cdc`) | 3.6.0-1.20 | verified (Phase 1) |
+| Java | 21 (`eclipse-temurin` 21.0.12 in `flink:2.2.1-java21`) | verified |
+| Flink | 2.2.1 | verified |
+| Flink CDC (`flink-connector-postgres-cdc`) | 3.6.0-2.2 | verified (Phases 1-2) |
+| `flink-shaded-guava` (bundled) | 31.1-jre-17.0 | required, see note |
 | Debezium (transitive) | 1.9.8.Final | verified |
-| `flink-connector-jdbc` / ClickHouse JDBC | tbd | Phase 3 |
+| PostgreSQL | 16.15 | verified |
+| ClickHouse server | 26.8.9 | verified up; sink lands in Phase 3 |
+| ClickHouse Flink connector / JDBC driver | 0.2.0 / 0.10.0 | resolve on Java 21; unverified until Phase 3 |
+
+Note: Flink CDC 3.6.0 is compiled against shaded guava 31, which Flink 1.20 shipped at runtime but
+Flink 2.x does not. Without bundling it the source fails with `NoClassDefFoundError:
+org/apache/flink/shaded/guava31/...ThreadFactoryBuilder`. It is declared directly in `pom.xml`
+so it wins Maven's version mediation. Flink CDC 3.6.0 supports Flink up to 2.2.x (not 2.3).
 
 ## Quick start
 

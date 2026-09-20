@@ -25,7 +25,7 @@ services:
       retries: 20
 
   clickhouse:
-    image: clickhouse/clickhouse-server:24.8
+    image: clickhouse/clickhouse-server:26.8
     container_name: cdc-clickhouse
     environment:
       CLICKHOUSE_USER: default
@@ -48,14 +48,14 @@ services:
 
   # Named volumes are created root-owned; the flink user must be able to write checkpoints.
   checkpoint-perms:
-    image: flink:1.20-java17
+    image: flink:2.2.1-java21
     user: root
     entrypoint: ["chown", "-R", "flink:flink", "/opt/flink/checkpoints"]
     volumes:
       - flink-checkpoints:/opt/flink/checkpoints
 
   jobmanager:
-    image: flink:1.20-java17
+    image: flink:2.2.1-java21
     container_name: cdc-jobmanager
     command: jobmanager
     depends_on:
@@ -77,7 +77,7 @@ services:
       retries: 20
 
   taskmanager:
-    image: flink:1.20-java17
+    image: flink:2.2.1-java21
     container_name: cdc-taskmanager
     command: taskmanager
     depends_on:

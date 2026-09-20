@@ -10,11 +10,11 @@
   <packaging>jar</packaging>
 
   <properties>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <flink.version>1.20.5</flink.version>
-    <!-- Flink CDC release suffix -1.20 = built against Flink 1.20.x -->
-    <flink.cdc.version>3.6.0-1.20</flink.cdc.version>
+    <flink.version>2.2.1</flink.version>
+    <!-- Flink CDC release suffix -2.2 = built against Flink 2.2.x -->
+    <flink.cdc.version>3.6.0-2.2</flink.cdc.version>
     <jackson.version>2.15.4</jackson.version>
   </properties>
 
@@ -37,6 +37,14 @@
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-connector-postgres-cdc</artifactId>
       <version>${flink.cdc.version}</version>
+    </dependency>
+    <!-- Flink CDC 3.6.0 is compiled against shaded guava 31, which Flink 1.20 shipped at runtime but
+         Flink 2.x does not (it ships 33.x). Declared directly so it wins Maven's version mediation
+         over the provided flink-streaming-java transitive and lands in the fat jar. -->
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-shaded-guava</artifactId>
+      <version>31.1-jre-17.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
