@@ -1,5 +1,7 @@
 package com.example.cdc;
 
+import com.example.cdc.model.ResourceChange;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.cdc.connectors.base.options.StartupOptions;
@@ -8,7 +10,7 @@ import org.apache.flink.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
- * Phase 1: Postgres CDC source (snapshot, then log streaming) printing raw Debezium JSON.
+ * Phase 2: Postgres CDC source (snapshot, then log streaming) -> typed ResourceChange events.
  *
  * Args (all optional): --host --port --heartbeat-ms --checkpoint-ms --startup initial|latest
  */
@@ -51,7 +53,8 @@ public class CdcJob {
                 // pgoutput ships with Postgres, so the stock image works with no extra plugin.
                 .decodingPluginName("pgoutput")
                 .startupOptions(startup)
-                .deserializer(new JsonDebeziumDeserializationSchema())
+                // decimal.format=NUMERIC emits NUMERIC columns as JSON numbers, not base64 bytes.
+                .deserializer(new JsonDebeziumDeserializationSchema(false, Map.of("decimal.format", "NUMERIC")))
                 .debeziumProperties(debezium)
                 // Parallelism > 1 only helps the snapshot phase (chunks read in parallel).
                 // Streaming is single-reader: there is one replication slot to read from.
@@ -60,9 +63,11 @@ public class CdcJob {
         env.fromSource(source, WatermarkStrategy.noWatermarks(), "postgres-cdc")
                 .setParallelism(2)
                 .filter(new HeartbeatFilter())
+                .map(new DebeziumJsonParser()).returns(ResourceChange.class)
+                .map(new LagLogger(10))
                 .print();
 
-        env.execute("postgres-cdc-phase1");
+        env.execute("postgres-cdc-phase2");
     }
 
     private static String arg(String[] args, String name, String dflt) {

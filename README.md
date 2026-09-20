@@ -8,7 +8,7 @@ Postgres (logical replication) ──> Flink CDC job (DataStream API) ──> Cl
 
 ## Status
 
-In progress: Phases 0 (infrastructure) and 1 (CDC source) are done. The full phase-by-phase implementation plan is in
+In progress: Phases 0 (infrastructure), 1 (CDC source) and 2 (typed change events) are done. The full phase-by-phase implementation plan is in
 [flink-cdc-postgres-clickhouse-plan.md](flink-cdc-postgres-clickhouse-plan.md). The implementation is built one phase at a time.
 
 ## Stack
@@ -72,7 +72,7 @@ Build and run the CDC job (Maven runs in Docker, no local Java needed):
 ```bash
 scripts/build.sh
 docker exec cdc-jobmanager flink run -d /opt/flink/usrlib/cdc-job.jar
-docker logs -f cdc-taskmanager      # raw Debezium JSON
+docker logs -f cdc-taskmanager      # typed ResourceChange events + CDC lag lines
 ```
 
 See [docs/heartbeat-findings.md](docs/heartbeat-findings.md) for the heartbeat experiment results.
