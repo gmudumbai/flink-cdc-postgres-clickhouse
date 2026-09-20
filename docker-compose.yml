@@ -46,10 +46,21 @@ services:
       timeout: 3s
       retries: 20
 
+  # Named volumes are created root-owned; the flink user must be able to write checkpoints.
+  checkpoint-perms:
+    image: flink:1.20-java17
+    user: root
+    entrypoint: ["chown", "-R", "flink:flink", "/opt/flink/checkpoints"]
+    volumes:
+      - flink-checkpoints:/opt/flink/checkpoints
+
   jobmanager:
     image: flink:1.20-java17
     container_name: cdc-jobmanager
     command: jobmanager
+    depends_on:
+      checkpoint-perms:
+        condition: service_completed_successfully
     ports:
       - "8081:8081"
     environment:

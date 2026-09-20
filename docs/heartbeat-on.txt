@@ -1,0 +1,7 @@
+# Run B: heartbeat ENABLED (5000 ms), checkpoint 10 s, churn on unpublished table
+22:06:56  active=true  retained_wal=56 bytes  unconfirmed=0 bytes
+22:07:11  active=true  retained_wal=1906 kB  unconfirmed=358 kB
+22:07:26  active=true  retained_wal=1787 kB  unconfirmed=953 kB
+22:07:42  active=true  retained_wal=2621 kB  unconfirmed=358 kB
+22:07:57  active=true  retained_wal=1841 kB  unconfirmed=1008 kB
+22:08:12  active=true  retained_wal=1787 kB  unconfirmed=357 kB

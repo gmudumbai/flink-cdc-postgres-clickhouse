@@ -1,0 +1,7 @@
+# Run A2: heartbeat DISABLED, checkpoint interval 10 min, --startup latest, churn on unpublished table
+22:04:29  active=true  retained_wal=56 bytes  unconfirmed=0 bytes
+22:04:44  active=true  retained_wal=1906 kB  unconfirmed=1191 kB
+22:05:00  active=true  retained_wal=3149 kB  unconfirmed=656 kB
+22:05:15  active=true  retained_wal=3150 kB  unconfirmed=1191 kB
+22:05:30  active=true  retained_wal=3090 kB  unconfirmed=715 kB
+22:05:45  active=true  retained_wal=1191 kB  unconfirmed=1191 kB

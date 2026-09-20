@@ -1,0 +1,9 @@
+# Run A: heartbeat DISABLED (--heartbeat-ms 0), resource_inventory untouched, churn on unpublished table
+21:58:21  active=true  retained_wal=176 bytes  unconfirmed=176 bytes
+21:58:36  active=true  retained_wal=1191 kB  unconfirmed=596 kB
+21:58:51  active=true  retained_wal=2978 kB  unconfirmed=1191 kB
+21:59:06  active=true  retained_wal=1485 kB  unconfirmed=595 kB
+21:59:21  active=true  retained_wal=1430 kB  unconfirmed=0 bytes
+21:59:36  active=true  retained_wal=1430 kB  unconfirmed=595 kB
+21:59:52  active=true  retained_wal=1548 kB  unconfirmed=119 kB
+22:00:07  active=true  retained_wal=3388 kB  unconfirmed=715 kB
