@@ -8,7 +8,7 @@ Postgres (logical replication) ──> Flink CDC job (DataStream API) ──> Cl
 
 ## Status
 
-Planning stage. The full phase-by-phase implementation plan is in
+In progress: Phase 0 (infrastructure) is done. The full phase-by-phase implementation plan is in
 [flink-cdc-postgres-clickhouse-plan.md](flink-cdc-postgres-clickhouse-plan.md). The implementation is built one phase at a time.
 
 ## Stack
@@ -35,10 +35,29 @@ Flink, Flink CDC, `flink-connector-jdbc` and the ClickHouse JDBC driver versions
 
 ## Quick start
 
-Coming once Phase 0 (infrastructure) lands:
-
 ```bash
 docker compose up -d
+docker compose ps        # postgres, clickhouse, jobmanager healthy
+```
+
+Sanity commands:
+
+```bash
+# Postgres: logical replication on, 200 seed rows
+docker exec cdc-postgres psql -U postgres -d inventory -c "SHOW wal_level;"
+docker exec cdc-postgres psql -U postgres -d inventory -c "SELECT count(*) FROM resource_inventory;"
+
+# CDC role can read the published tables
+docker exec -e PGPASSWORD=cdc_pass cdc-postgres psql -h localhost -U cdc_user -d inventory -c "SELECT count(*) FROM cdc_heartbeat;"
+
+# ClickHouse over HTTP
+curl "localhost:8123/?query=SELECT%201&user=default&password=clickhouse"
+
+# Flink UI: http://localhost:8081 (1 TaskManager, 4 slots)
+curl -s localhost:8081/overview
+
+# Replication slot health (add --watch to refresh every 2s)
+scripts/slot_health.sh
 ```
 
 ## Note
