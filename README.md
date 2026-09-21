@@ -8,7 +8,7 @@ Postgres (logical replication) ──> Flink CDC job (DataStream API) ──> Cl
 
 ## Status
 
-In progress: Phases 0 (infrastructure), 1 (CDC source) and 2 (typed change events) are done. The full phase-by-phase implementation plan is in
+In progress: Phases 0 (infrastructure), 1 (CDC source), 2 (typed change events) and 3 (ClickHouse sink) are done. The full phase-by-phase implementation plan is in
 [flink-cdc-postgres-clickhouse-plan.md](flink-cdc-postgres-clickhouse-plan.md). The implementation is built one phase at a time.
 
 ## Stack
@@ -41,8 +41,8 @@ Flink, Flink CDC, `flink-connector-jdbc` and the ClickHouse JDBC driver versions
 | `flink-shaded-guava` (bundled) | 31.1-jre-17.0 | required, see note |
 | Debezium (transitive) | 1.9.8.Final | verified |
 | PostgreSQL | 16.15 | verified |
-| ClickHouse server | 26.8.9 | verified up; sink lands in Phase 3 |
-| ClickHouse Flink connector / JDBC driver | 0.2.0 / 0.10.0 | resolve on Java 21; unverified until Phase 3 |
+| ClickHouse server | 26.8.9 | verified |
+| ClickHouse Flink connector (`flink-connector-clickhouse-2.0.0`, `all` classifier) | 0.2.0 | verified (Phase 3); DataStream, at-least-once |
 
 Note: Flink CDC 3.6.0 is compiled against shaded guava 31, which Flink 1.20 shipped at runtime but
 Flink 2.x does not. Without bundling it the source fails with `NoClassDefFoundError:
@@ -82,6 +82,15 @@ Build and run the CDC job (Maven runs in Docker, no local Java needed):
 scripts/build.sh
 docker exec cdc-jobmanager flink run -d /opt/flink/usrlib/cdc-job.jar
 docker logs -f cdc-taskmanager      # typed ResourceChange events + CDC lag lines
+```
+
+Query ClickHouse (raw append-only table vs. current state):
+
+```bash
+ch() { curl -s "localhost:8123/?user=default&password=clickhouse" --data-binary "$1"; }
+ch "SELECT count() FROM cdc.resource_inventory_current"                 # current state, deletes removed
+ch "SELECT * FROM cdc.resource_inventory WHERE resource_id='res-0010'"  # every version of a row
+ch "OPTIMIZE TABLE cdc.resource_inventory FINAL"                        # force merges
 ```
 
 See [docs/heartbeat-findings.md](docs/heartbeat-findings.md) for the heartbeat experiment results.

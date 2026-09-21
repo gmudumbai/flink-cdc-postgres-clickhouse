@@ -258,7 +258,7 @@ Land changes in ClickHouse using `ReplacingMergeTree`, so that an append-only st
    CREATE VIEW cdc.resource_inventory_current AS
    SELECT * FROM cdc.resource_inventory FINAL WHERE _is_deleted = 0;
    ```
-2. `ClickHouseSinkFactory.java`: a JDBC sink via `flink-connector-jdbc`:
+2. `ClickHouseSinkFactory.java`: *(implemented with the official ClickHouse Flink connector instead of `flink-connector-jdbc`; `team`, `instance_size` and `hourly_cost` are `Nullable` to mirror Postgres; batching is `maxBatchSize`/`maxTimeInBufferMS`, there is no retry count. The JDBC description below is the original plan.)* a JDBC sink via `flink-connector-jdbc`:
    - URL `jdbc:clickhouse://clickhouse:8123/cdc`, driver `com.clickhouse.jdbc.ClickHouseDriver`
    - A plain `INSERT INTO cdc.resource_inventory (...) VALUES (?, ?, ...)` — **always an insert, never an update or delete**
    - `JdbcExecutionOptions`: batch size 500, batch interval 2000 ms, max retries 3

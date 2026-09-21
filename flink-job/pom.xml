@@ -15,6 +15,7 @@
     <flink.version>2.2.1</flink.version>
     <!-- Flink CDC release suffix -2.2 = built against Flink 2.2.x -->
     <flink.cdc.version>3.6.0-2.2</flink.cdc.version>
+    <clickhouse.connector.version>0.2.0</clickhouse.connector.version>
     <jackson.version>2.15.4</jackson.version>
   </properties>
 
@@ -33,6 +34,19 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-connector-base</artifactId>
+      <version>${flink.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <!-- Official ClickHouse connector; the "all" classifier bundles the ClickHouse client. -->
+    <dependency>
+      <groupId>com.clickhouse.flink</groupId>
+      <artifactId>flink-connector-clickhouse-2.0.0</artifactId>
+      <version>${clickhouse.connector.version}</version>
+      <classifier>all</classifier>
+    </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
       <artifactId>flink-connector-postgres-cdc</artifactId>

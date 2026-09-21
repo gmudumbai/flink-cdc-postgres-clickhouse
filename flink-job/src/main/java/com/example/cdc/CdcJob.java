@@ -10,9 +10,10 @@ import org.apache.flink.cdc.debezium.JsonDebeziumDeserializationSchema;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
- * Phase 2: Postgres CDC source (snapshot, then log streaming) -> typed ResourceChange events.
+ * Phase 3: Postgres CDC source (snapshot, then log streaming) -> typed ResourceChange -> ClickHouse.
  *
  * Args (all optional): --host --port --heartbeat-ms --checkpoint-ms --startup initial|latest
+ * --clickhouse-url --clickhouse-user --clickhouse-password
  */
 public class CdcJob {
 
@@ -22,6 +23,9 @@ public class CdcJob {
         long heartbeatMs = Long.parseLong(arg(args, "--heartbeat-ms", "5000"));
         StartupOptions startup = "latest".equals(arg(args, "--startup", "initial"))
                 ? StartupOptions.latest() : StartupOptions.initial();
+        String chUrl = arg(args, "--clickhouse-url", "http://clickhouse:8123");
+        String chUser = arg(args, "--clickhouse-user", "default");
+        String chPassword = arg(args, "--clickhouse-password", "clickhouse");
         long checkpointMs = Long.parseLong(arg(args, "--checkpoint-ms", "10000"));
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -65,9 +69,9 @@ public class CdcJob {
                 .filter(new HeartbeatFilter())
                 .map(new DebeziumJsonParser()).returns(ResourceChange.class)
                 .map(new LagLogger(10))
-                .print();
+                .sinkTo(ClickHouseSinkFactory.create(chUrl, chUser, chPassword, "cdc", "resource_inventory"));
 
-        env.execute("postgres-cdc-phase2");
+        env.execute("postgres-cdc-phase3");
     }
 
     private static String arg(String[] args, String name, String dflt) {
