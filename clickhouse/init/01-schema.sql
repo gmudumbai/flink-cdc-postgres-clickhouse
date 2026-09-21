@@ -24,3 +24,8 @@ ORDER BY resource_id;
 -- Current state: latest version per key, tombstones removed.
 CREATE VIEW cdc.resource_inventory_current AS
 SELECT * FROM cdc.resource_inventory FINAL WHERE _is_deleted = 0;
+
+-- Least privilege for the Flink sink: it may only INSERT into the mirror table
+-- (the ClickHouse counterpart of the Postgres cdc_user). Demo password only.
+CREATE USER IF NOT EXISTS flink_sink IDENTIFIED BY 'flink_pass';
+GRANT INSERT ON cdc.resource_inventory TO flink_sink;

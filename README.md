@@ -8,7 +8,7 @@ Postgres (logical replication) ──> Flink CDC job (DataStream API) ──> Cl
 
 ## Status
 
-In progress: Phases 0 (infrastructure), 1 (CDC source), 2 (typed change events) and 3 (ClickHouse sink) are done. The full phase-by-phase implementation plan is in
+In progress: Phases 0 (infrastructure), 1 (CDC source), 2 (typed change events), 3 (ClickHouse sink) and 4 (checkpointing and failure demo) are done. The full phase-by-phase implementation plan is in
 [flink-cdc-postgres-clickhouse-plan.md](flink-cdc-postgres-clickhouse-plan.md). The implementation is built one phase at a time.
 
 ## Stack
@@ -25,7 +25,7 @@ docker-compose.yml
 postgres/init/      schema, seed data, publication
 clickhouse/init/    ReplacingMergeTree target table
 flink-job/          Maven project with the CDC job
-scripts/            change simulator, verify, replication slot health
+scripts/            simulator, verify, failure demo, slot health
 docs/
 ```
 
@@ -93,7 +93,13 @@ ch "SELECT * FROM cdc.resource_inventory WHERE resource_id='res-0010'"  # every 
 ch "OPTIMIZE TABLE cdc.resource_inventory FINAL"                        # force merges
 ```
 
-See [docs/heartbeat-findings.md](docs/heartbeat-findings.md) for the heartbeat experiment results.
+Kill-and-recover demo (simulator running, TaskManager killed, `verify.sh` must match):
+
+```bash
+scripts/fresh_start.sh && scripts/failure_demo.sh taskmanager    # or: postgres
+```
+
+See [docs/failure-demo.md](docs/failure-demo.md) for results, and [docs/heartbeat-findings.md](docs/heartbeat-findings.md) for the heartbeat experiment results.
 
 ## Note
 

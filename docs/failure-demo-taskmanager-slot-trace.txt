@@ -1,0 +1,36 @@
+13:03:41  active=true  retained_wal=360 bytes  unconfirmed=304 bytes  restart_lsn=0/193AE70  confirmed_flush_lsn=0/193AEA8
+13:03:46  active=true  retained_wal=328 kB  unconfirmed=328 kB  restart_lsn=0/193AE70  confirmed_flush_lsn=0/193AEA8
+13:03:52  active=true  retained_wal=363 kB  unconfirmed=29 kB  restart_lsn=0/193AED8  confirmed_flush_lsn=0/198E6A0
+13:03:57  active=true  retained_wal=390 kB  unconfirmed=56 kB  restart_lsn=0/193AED8  confirmed_flush_lsn=0/198E6A0
+13:04:02  active=true  retained_wal=49 kB  unconfirmed=28 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/199C5A0
+13:04:07  active=true  retained_wal=100 kB  unconfirmed=79 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/199C5A0
+13:04:12  active=false  retained_wal=129 kB  unconfirmed=29 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:17  active=false  retained_wal=162 kB  unconfirmed=62 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:23  active=false  retained_wal=191 kB  unconfirmed=91 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:28  active=false  retained_wal=220 kB  unconfirmed=120 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:33  active=false  retained_wal=254 kB  unconfirmed=154 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:38  active=false  retained_wal=282 kB  unconfirmed=182 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:43  active=true  retained_wal=324 kB  unconfirmed=224 kB  restart_lsn=0/1997098  confirmed_flush_lsn=0/19B0140
+13:04:48  active=true  retained_wal=253 kB  unconfirmed=49 kB  restart_lsn=0/19B1840  confirmed_flush_lsn=0/19E46F0
+13:04:53  active=true  retained_wal=284 kB  unconfirmed=80 kB  restart_lsn=0/19B1840  confirmed_flush_lsn=0/19E46F0
+13:04:58  active=true  retained_wal=311 kB  unconfirmed=28 kB  restart_lsn=0/19B1840  confirmed_flush_lsn=0/19F8730
+13:05:03  active=true  retained_wal=348 kB  unconfirmed=64 kB  restart_lsn=0/19B1840  confirmed_flush_lsn=0/19F8730
+13:05:09  active=true  retained_wal=91 kB  unconfirmed=27 kB  restart_lsn=0/19F8848  confirmed_flush_lsn=0/1A087E8
+13:05:14  active=true  retained_wal=118 kB  unconfirmed=54 kB  restart_lsn=0/19F8848  confirmed_flush_lsn=0/1A087E8
+13:05:19  active=true  retained_wal=54 kB  unconfirmed=27 kB  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A16020
+13:05:24  active=true  retained_wal=83 kB  unconfirmed=56 kB  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A16020
+13:05:29  active=true  retained_wal=115 kB  unconfirmed=33 kB  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A23E60
+13:05:34  active=true  retained_wal=148 kB  unconfirmed=6360 bytes  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A32E10
+13:05:40  active=true  retained_wal=178 kB  unconfirmed=36 kB  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A32E10
+13:05:45  active=true  retained_wal=190 kB  unconfirmed=552 bytes  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A3ECA0
+13:05:50  active=true  retained_wal=191 kB  unconfirmed=744 bytes  restart_lsn=0/1A0F540  confirmed_flush_lsn=0/1A3ECA0
+13:05:55  active=true  retained_wal=192 bytes  unconfirmed=192 bytes  restart_lsn=0/1A3EF50  confirmed_flush_lsn=0/1A3EF50
+13:06:00  Error response from daemon: No such container: cdc-postgres
+13:06:05  13:06:11  13:06:16  13:06:21  active=false  retained_wal=312 bytes  unconfirmed=256 bytes  restart_lsn=0/193AE70  confirmed_flush_lsn=0/193AEA8
+13:06:26  active=true  retained_wal=304 kB  unconfirmed=304 kB  restart_lsn=0/193AE70  confirmed_flush_lsn=0/193AEA8
+13:06:31  active=true  retained_wal=334 kB  unconfirmed=334 kB  restart_lsn=0/193AE70  confirmed_flush_lsn=0/193AEA8
+13:06:36  active=true  retained_wal=363 kB  unconfirmed=17 kB  restart_lsn=0/193AED8  confirmed_flush_lsn=0/1991528
+13:06:41  active=true  retained_wal=390 kB  unconfirmed=45 kB  restart_lsn=0/193AED8  confirmed_flush_lsn=0/1991528
+13:06:47  active=true  retained_wal=90 kB  unconfirmed=40 kB  restart_lsn=0/1992B80  confirmed_flush_lsn=0/199F070
+13:06:52  active=true  retained_wal=118 kB  unconfirmed=69 kB  restart_lsn=0/1992B80  confirmed_flush_lsn=0/199F070
+13:06:57  active=false  retained_wal=35 kB  unconfirmed=12 kB  restart_lsn=0/19AD560  confirmed_flush_lsn=0/19B3230

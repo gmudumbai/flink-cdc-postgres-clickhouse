@@ -1,12 +1,17 @@
 package com.example.cdc;
 
 import com.example.cdc.model.ResourceChange;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.cdc.connectors.base.options.StartupOptions;
 import org.apache.flink.cdc.connectors.postgres.source.PostgresSourceBuilder;
 import org.apache.flink.cdc.debezium.JsonDebeziumDeserializationSchema;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.ExternalizedCheckpointRetention;
+import org.apache.flink.configuration.RestartStrategyOptions;
+import org.apache.flink.core.execution.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
@@ -24,13 +29,28 @@ public class CdcJob {
         StartupOptions startup = "latest".equals(arg(args, "--startup", "initial"))
                 ? StartupOptions.latest() : StartupOptions.initial();
         String chUrl = arg(args, "--clickhouse-url", "http://clickhouse:8123");
-        String chUser = arg(args, "--clickhouse-user", "default");
-        String chPassword = arg(args, "--clickhouse-password", "clickhouse");
+        String chUser = arg(args, "--clickhouse-user", "flink_sink");
+        String chPassword = arg(args, "--clickhouse-password", "flink_pass");
         long checkpointMs = Long.parseLong(arg(args, "--checkpoint-ms", "10000"));
 
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // The incremental snapshot source finishes snapshot splits on checkpoints, so this is required.
-        env.enableCheckpointing(checkpointMs);
+        // Fixed-delay restart: after a failure (e.g. the TaskManager dies) retry 3 times, 5 s apart,
+        // restoring from the latest completed checkpoint each time.
+        Configuration conf = new Configuration();
+        conf.set(RestartStrategyOptions.RESTART_STRATEGY, "fixed-delay");
+        conf.set(RestartStrategyOptions.RESTART_STRATEGY_FIXED_DELAY_ATTEMPTS, 3);
+        conf.set(RestartStrategyOptions.RESTART_STRATEGY_FIXED_DELAY_DELAY, Duration.ofSeconds(5));
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(conf);
+
+        // Checkpoints go to the shared volume set in the cluster config (state.checkpoints.dir).
+        // A checkpoint holds the source's WAL position (LSN) and snapshot progress, plus the sink's
+        // buffered requests. The source confirms the LSN to the replication slot only after a
+        // checkpoint completes, so Postgres never discards WAL the job could still need to replay.
+        // The incremental snapshot source also finishes snapshot splits on checkpoints, so this is required.
+        env.enableCheckpointing(checkpointMs, CheckpointingMode.EXACTLY_ONCE);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(3_000);
+        // Keep the last checkpoint after cancel so a job can be resubmitted from it (no re-snapshot).
+        env.getCheckpointConfig().setExternalizedCheckpointRetention(
+                ExternalizedCheckpointRetention.RETAIN_ON_CANCELLATION);
 
         Properties debezium = new Properties();
         // Use the publication created in SQL; never let the connector create one (cdc_user lacks CREATE).
@@ -71,7 +91,7 @@ public class CdcJob {
                 .map(new LagLogger(10))
                 .sinkTo(ClickHouseSinkFactory.create(chUrl, chUser, chPassword, "cdc", "resource_inventory"));
 
-        env.execute("postgres-cdc-phase3");
+        env.execute("postgres-cdc");
     }
 
     private static String arg(String[] args, String name, String dflt) {
