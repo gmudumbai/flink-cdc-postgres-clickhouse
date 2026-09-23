@@ -1,46 +1,46 @@
 ### BEFORE
-latest completed checkpoint=1, restored from=None, counts={'restored': 0, 'total': 1, 'in_progress': 0, 'completed': 1, 'failed': 0}
+latest completed checkpoint=None, restored from=None, counts={'restored': 0, 'total': 1, 'in_progress': 1, 'completed': 0, 'failed': 0}
 postgres rows: 200
 clickhouse raw rows: 200, current view: 200
 ### T+30s
 latest completed checkpoint=4, restored from=None, counts={'restored': 0, 'total': 4, 'in_progress': 0, 'completed': 4, 'failed': 0}
-### killing taskmanager at 13:04:11
-  13:04:12 job=RUNNING
-  13:04:15 job=RUNNING
-  13:04:18 job=RUNNING
-  13:04:21 job=RUNNING
-  13:04:24 job=RUNNING
-  13:04:27 job=RUNNING
-### restarting taskmanager at 13:04:30
-  13:04:32 job=RUNNING
-  13:04:35 job=RESTARTING
-  13:04:38 job=RESTARTING
-  13:04:41 job=RUNNING
-  13:04:44 job=RUNNING
-  13:04:47 job=RUNNING
-  13:04:50 job=RUNNING
-  13:04:53 job=RUNNING
-  13:04:56 job=RUNNING
-  13:04:59 job=RUNNING
+### killing taskmanager at 10:17:51
+  10:17:52 job=RUNNING
+  10:17:55 job=RUNNING
+  10:17:58 job=RUNNING
+  10:18:01 job=RUNNING
+  10:18:04 job=RUNNING
+  10:18:08 job=RUNNING
+### restarting taskmanager at 10:18:11
+  10:18:12 job=RUNNING
+  10:18:15 job=RESTARTING
+  10:18:18 job=RESTARTING
+  10:18:21 job=RUNNING
+  10:18:24 job=RUNNING
+  10:18:27 job=RUNNING
+  10:18:31 job=RUNNING
+  10:18:34 job=RUNNING
+  10:18:37 job=RUNNING
+  10:18:40 job=RUNNING
 done: {'insert': 616, 'update': 1430, 'delete': 354}
 ### AFTER: simulator ops logged=2400, failed batches=0
 latest completed checkpoint=12, restored from=4, counts={'restored': 1, 'total': 12, 'in_progress': 0, 'completed': 10, 'failed': 2}
 checkpoint offsets seen by the source:
-  Stream split offset on checkpoint 10: Offset{lsn=LSN{0/1A16020}, txId=2606, lastCommitTs=1790010313800520}
-  Stream split offset on checkpoint 11: Offset{lsn=LSN{0/1A23E60}, txId=2808, lastCommitTs=1790010323815044}
-  Stream split offset on checkpoint 12: Offset{lsn=LSN{0/1A32E10}, txId=3010, lastCommitTs=1790010333910051}
+  Stream split offset on checkpoint 10: Offset{lsn=LSN{0/1CC4168}, txId=2647, lastCommitTs=1790173134858876}
+  Stream split offset on checkpoint 11: Offset{lsn=LSN{0/1CD0B00}, txId=2828, lastCommitTs=1790173143931681}
+  Stream split offset on checkpoint 12: Offset{lsn=LSN{0/1CDF900}, txId=3030, lastCommitTs=1790173153970567}
 ### VERIFY
 MATCH
-  state:running|155|217.8031
-  state:stopped|163|265.7906
-  state:terminated|144|200.5215
-  team:<null>|118|174.8378
-  team:data|133|203.6913
-  team:payments|96|142.7877
-  team:platform|115|162.7984
-  total|462|684.1152
-raw rows: 2675, exact duplicates from replay: 80
-raw rows: 2675, exact duplicates (same resource_id and _version) from replay: 80
-duplicate resource_ids: 80 distinct changes were written more than once
+  state:running|155|214.5747
+  state:stopped|153|241.9282
+  state:terminated|154|215.7601
+  team:<null>|119|176.7960
+  team:data|134|191.8779
+  team:payments|101|152.5345
+  team:platform|108|151.0546
+  total|462|672.2630
+raw rows: 2595, exact duplicates from replay: 0
+raw rows: 2595, exact duplicates (same resource_id and _version) from replay: 0
+duplicate resource_ids: 0 distinct changes were written more than once
 current view: 462 rows, postgres: 462
 verify exit code: 0

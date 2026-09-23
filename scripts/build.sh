@@ -2,6 +2,8 @@
 # Builds the fat jar inside a Maven container (no local Java/Maven needed).
 set -euo pipefail
 cd "$(dirname "$0")/../flink-job"
+# clean matters here: without it, a removed test class leaves its old surefire report behind,
+# and the results look fine while actually being stale from a previous build.
 docker run --rm -v "$PWD":/build -v cdc-m2:/root/.m2 -w /build \
-  maven:3.9-eclipse-temurin-21 mvn -q -B package
+  maven:3.9-eclipse-temurin-21 mvn -q -B clean package
 ls -lh target/cdc-job.jar
