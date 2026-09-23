@@ -1,0 +1,84 @@
+[
+  {
+    "pgTable": "network_interfaces",
+    "chTable": "network_interfaces",
+    "columns": [
+      {
+        "pgColumn": "interface_id",
+        "chColumn": "interface_id",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "resource_id",
+        "chColumn": "resource_id",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "mac_address",
+        "chColumn": "mac_address",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "private_ip",
+        "chColumn": "private_ip",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "public_ip",
+        "chColumn": "public_ip",
+        "chType": "Nullable(String)"
+      },
+      {
+        "pgColumn": "is_primary",
+        "chColumn": "is_primary",
+        "chType": "UInt8"
+      },
+      {
+        "pgColumn": "created_at",
+        "chColumn": "created_at",
+        "chType": "DateTime64(3)"
+      }
+    ]
+  },
+  {
+    "pgTable": "snapshot_jobs",
+    "chTable": "snapshot_jobs",
+    "columns": [
+      {
+        "pgColumn": "snapshot_id",
+        "chColumn": "snapshot_id",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "resource_id",
+        "chColumn": "resource_id",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "snapshot_type",
+        "chColumn": "snapshot_type",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "size_gb",
+        "chColumn": "size_gb",
+        "chType": "Nullable(Int32)"
+      },
+      {
+        "pgColumn": "status",
+        "chColumn": "status",
+        "chType": "String"
+      },
+      {
+        "pgColumn": "started_at",
+        "chColumn": "started_at",
+        "chType": "DateTime64(3)"
+      },
+      {
+        "pgColumn": "completed_at",
+        "chColumn": "completed_at",
+        "chType": "Nullable(DateTime64(3))"
+      }
+    ]
+  }
+]
