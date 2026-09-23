@@ -20,7 +20,13 @@ watch_state() { for _ in $(seq 1 "$1"); do echo "  $(date +%H:%M:%S) job=$(st)";
 # them, both inside one insert batch (optimize_on_insert) and by background merges. Restored on exit.
 CH "SYSTEM STOP MERGES cdc.resource_inventory" >/dev/null
 CH "ALTER USER flink_sink SETTINGS optimize_on_insert = 0" >/dev/null
-trap 'CH "SYSTEM START MERGES cdc.resource_inventory" >/dev/null; CH "ALTER USER flink_sink SETTINGS optimize_on_insert = 1" >/dev/null' EXIT
+# sample_slot.sh runs for a fixed duration that may outlive this script (its 200s vs. this
+# script's ~150s). Left alone, a second run started before the first's sampler exits would have
+# two processes writing the same file at different offsets -- silent NUL-byte corruption, not a
+# clean overwrite (this happened once; the committed trace file had to be regenerated). So the
+# sampler's PID is tracked and explicitly killed on exit, success or failure, rather than trusted
+# to finish on its own.
+trap 'CH "SYSTEM START MERGES cdc.resource_inventory" >/dev/null; CH "ALTER USER flink_sink SETTINGS optimize_on_insert = 1" >/dev/null; kill "$SAMPLE_PID" 2>/dev/null' EXIT
 
 TRACE="docs/failure-demo-$MODE-slot-trace.txt"
 : > sim_ops.log
@@ -31,6 +37,7 @@ echo "clickhouse raw rows: $(CH 'SELECT count() FROM cdc.resource_inventory'), c
 scripts/simulate_changes.py --rate 20 --seconds 120 --seed 7 > /tmp/sim_out.txt 2>&1 &
 SIM=$!
 scripts/sample_slot.sh 200 5 > "$TRACE" 2>&1 &
+SAMPLE_PID=$!
 sleep 30
 echo "### T+30s"; ck
 
