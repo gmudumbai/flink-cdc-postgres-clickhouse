@@ -16,7 +16,7 @@
     <!-- Flink CDC release suffix -2.2 = built against Flink 2.2.x -->
     <flink.cdc.version>3.6.0-2.2</flink.cdc.version>
     <clickhouse.connector.version>0.2.0</clickhouse.connector.version>
-    <jackson.version>2.15.4</jackson.version>
+    <jackson.version>2.22.3</jackson.version>
   </properties>
 
   <dependencies>
@@ -68,7 +68,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>5.10.2</version>
+      <version>6.1.3</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
