@@ -14,7 +14,7 @@ Conventions:
 - Everything runs locally via Docker Compose. No cloud resources, no managed databases.
 - Java 21, Maven, Apache Flink 2.2.x, Flink CDC 3.6.0-2.2 (`org.apache.flink:flink-connector-postgres-cdc`), and the official ClickHouse Flink connector (`com.clickhouse.flink:flink-connector-clickhouse-2.0.0`, DataStream, at-least-once). *Deviation from the original plan (Java 17, Flink 1.20, flink-connector-jdbc): upgraded after Phase 2; see README version table.*
 - **Version compatibility is the single biggest risk in this project.** Before writing `pom.xml`, verify on Maven Central which Flink CDC 3.x release targets the chosen Flink 1.20 patch, and which `flink-connector-jdbc` version matches. If a combination fails at runtime with `NoSuchMethodError` or similar, that is a version mismatch — fix the matrix rather than working around it. Record the working combination in the README.
-- Stock images only: `postgres:16`, `clickhouse/clickhouse-server:26.8`, `flink:2.2.1-java21`.
+- Stock images only: `postgres:18`, `clickhouse/clickhouse-server:26.8`, `flink:2.2.1-java21`. *Deviation: started on `postgres:16`, bumped to 18 after Phase 6 for the PG17+ failover-slot fix; see README version table.*
 - Use the **DataStream API** for the CDC source and the sink. Flink SQL would be shorter; the README will explain why DataStream was chosen (see Phase 6).
 - Keep it to one Flink job and one primary table. Small and readable beats complete.
 - Commit at the end of every phase: `phase 2: typed change events with before/after images`.

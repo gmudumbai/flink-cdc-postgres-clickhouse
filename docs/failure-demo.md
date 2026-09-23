@@ -19,7 +19,7 @@ Exactly-once checkpointing every 10 s (min pause 3 s) to the shared volume, chec
 on cancel, fixed-delay restart (3 attempts, 5 s apart). The checkpoint stores the source's WAL
 position (LSN) and the sink's buffered requests.
 
-## Result 1: TaskManager killed at 13:04:11, restarted at 13:04:30
+## Result 1: TaskManager killed at 10:39:24, restarted at 10:39:43
 
 | | |
 |---|---|
@@ -27,33 +27,33 @@ position (LSN) and the sink's buffered requests.
 | Checkpoints during the outage | 2 failed, then normal |
 | Simulator | 2400 operations, 0 failed batches |
 | `verify.sh` | **exit 0**, 462 rows on both sides, every per-team and per-state aggregate identical |
-| Replay duplicates | **80** changes were written to ClickHouse twice |
+| Replay duplicates | **40** changes were written to ClickHouse twice |
 | `_current` view | still exactly correct (462 = Postgres) |
 
 Slot behaviour (`docs/failure-demo-taskmanager-slot-trace.txt`):
 
 ```
-13:04:07  active=true   retained_wal=100 kB  restart=0/1997098
-13:04:12  active=false  retained_wal=129 kB  restart=0/1997098   <- TaskManager killed
-13:04:28  active=false  retained_wal=220 kB  restart=0/1997098   <- WAL grows, restart_lsn frozen
-13:04:38  active=false  retained_wal=282 kB  restart=0/1997098
-13:04:43  active=true   retained_wal=324 kB  restart=0/1997098   <- reconnected
-13:04:48  active=true   retained_wal=253 kB  restart=0/19B1840   <- drained, restart_lsn advances after a checkpoint
+10:39:20  active=true   retained_wal=572 kB  restart=0/1BD0648
+10:39:25  active=false  retained_wal=47 kB   restart=0/1C5AFF8   <- TaskManager killed
+10:39:40  active=false  retained_wal=146 kB  restart=0/1C5AFF8   <- WAL grows, restart_lsn frozen
+10:39:45  active=false  retained_wal=173 kB  restart=0/1C5AFF8
+10:39:56  active=true   retained_wal=242 kB  restart=0/1C5AFF8   <- reconnected
+10:40:01  active=true   retained_wal=179 kB  restart=0/1C72728   <- drained, restart_lsn advances after a checkpoint
 ```
 
 While the consumer was gone, Postgres kept every WAL byte after `restart_lsn` (it did not jump
 past unprocessed data). After reconnecting, the job replayed from its checkpoint and the retained
 WAL shrank once a checkpoint completed. This is what a replication slot is for.
 
-## Result 2: Postgres container restarted at 13:06:56 (under load)
+## Result 2: Postgres container restarted at 10:42:05 (under load)
 
 | | |
 |---|---|
-| Job | went `RESTARTING` once, back to `RUNNING` about 8 s later (1 of 3 restart attempts used) |
-| Restored from | **checkpoint 4**; its stored offset `lsn=0/19B3230` equals the slot's `confirmed_flush_lsn` after the restart |
-| Simulator | 2280 operations logged, 1 batch failed while Postgres was down (expected; it is logged, never applied) |
-| `verify.sh` | **exit 0**, 453 rows on both sides |
-| Replay duplicates | **60** |
+| Job | went `RESTARTING` once, back to `RUNNING` about 15 s later (1 of 3 restart attempts used) |
+| Restored from | **checkpoint 4** |
+| Simulator | 2260 operations logged, 6 batches failed while Postgres was down (expected; logged, never applied) |
+| `verify.sh` | **exit 0**, 459 rows on both sides |
+| Replay duplicates | **80** |
 
 The replication slot lives in Postgres's data directory, so it survived the restart.
 
@@ -73,10 +73,16 @@ The replication slot lives in Postgres's data directory, so it survived the rest
   matters, but it is worth saying out loud.
 - **Untested:** a Postgres outage longer than the restart budget (3 attempts x 5 s) would leave the
   job `FAILED`. I only tested a container restart that recovered within one attempt.
+- **This is a restart, not a failover.** `docker compose restart postgres` brings back the *same*
+  container, same disk, same data directory — the replication slot was never destroyed. A real
+  failover (a different node, previously a standby, promoted to primary) is a materially different
+  and more dangerous case: a promoted node typically has no usable slot at all, and Postgres before
+  17 has no built-in way to sync one to it, so committed changes in the gap can be lost silently, not
+  just delayed. Not reproduced here — see the version matrix note in the main README.
 
 ## Where exactly-once ends
 - **Flink source and state:** exactly-once. The LSN in the checkpoint and the slot's confirmed position move together.
-- **Sink into ClickHouse:** at-least-once. After a restore, changes after the checkpoint are sent again (the 80 and 60 above).
+- **Sink into ClickHouse:** at-least-once. After a restore, changes after the checkpoint are sent again (the 40 and 80 above).
 - **Correctness:** recovered by `ReplacingMergeTree`. A replayed change has the same `resource_id` and `_version` (its LSN), so it collapses to one row.
 
 ## Schema changes mid-stream (limitation, not implemented)
